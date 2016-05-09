@@ -261,32 +261,6 @@ int getTrash(FILE* input, char **hash){
 	return trash;
 }
 
-/*
- *  @param trash - valor do lixo
- *  @param qt - tamanho da arvore
- *  @param huff - arvore de huffman
- *  @param hash - tabela com a codificação
- *  @param input - arquivo principal
- *  @param file_name - nome do arquivo principal
- */
-void writeOutputfile(int trash, int qt, pnode *huff, char **hash, FILE *input, char *file_name)
-{
-	strcat(file_name, ".huff");
-    FILE *outfile = fopen(file_name, "w");
-
-	//escreve os 2 primeiros bytes
-	putTwoFirstBytes(outfile, trash, qt);
-
-	//escreve a arvore
-	INFO printf("\n\n");
-	writeTree(huff, outfile);
-
-	//escreve o arquivo compactado
-	writeFileOut(input, outfile, hash);
-
-	fclose(outfile);
-}
-
 
 //Escreve os 2 primeiros bytes no arquivo comprimido
 void putTwoFirstBytes(FILE *out, int trash, int qt){
@@ -398,11 +372,10 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 
 		//INFO printf("\n%s", c);
 
-				i += 8; //controle de concatenacao
 				cont -= 8;
 				//printf("\nzera");
 
-				ch <<= 8;
+				ch = 0;
 				for (i = 0, j = 7; i <= 7; i++, j--) {
 
 					if(c[i]  == '1') ch = setBit(ch, j);
@@ -418,7 +391,7 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 	INFO printf(" -> %s", chOut);
 	INFO printf("\n\nEscrevendo ultimo simbolo.....");
 
-			//escrevendo ultimo nó
+			//escrevendo ultimo byte
 			if(cont > 0)
 			{
 				for(i = 0; i <= (cont); i++)
@@ -428,7 +401,7 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 
 				for( ; i <= 7; i++) c[i] = '0'; //escrevendo o lixo
 
-				ch <<= 8;
+				ch = 0;
 				for (i = 0, j = 7; i <= 7; i++, j--) {
 
 					if(c[i]  == '1') ch = setBit(ch, j);
@@ -443,9 +416,31 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 
 }
 
+/*
+ *  @param trash - valor do lixo
+ *  @param qt - tamanho da arvore
+ *  @param huff - arvore de huffman
+ *  @param hash - tabela com a codificação
+ *  @param input - arquivo principal
+ *  @param file_name - nome do arquivo principal
+ */
+void writeOutputfile(int trash, int qt, pnode *huff, char **hash, FILE *input, char *file_name)
+{
+	strcat(file_name, ".huff");
+    FILE *outfile = fopen(file_name, "w");
 
+	//escreve os 2 primeiros bytes
+	putTwoFirstBytes(outfile, trash, qt);
 
+	//escreve a arvore
+	INFO printf("\n\n");
+	writeTree(huff, outfile);
 
+	//escreve o arquivo compactado
+	writeFileOut(input, outfile, hash);
+
+	fclose(outfile);
+}
 //DESCOMPRESS
 
 //Retorna o tamanho do lixo
