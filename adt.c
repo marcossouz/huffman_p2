@@ -550,8 +550,10 @@ void makedecompressOutputfile(FILE *f,FILE *writeoutput,pnode *huff,int trash, i
 	}
 	/*
 	 * Esse proximo passo precisa do auxch fora do while para funcionar e funciona assim:
-	 * primeiro: Na primeira execucao ele entra no primeiro if, coloca o atual byte em ch, e guarda o proximo em...
-	 *
+	 * primeiro: Na primeira execucao ele entra no primeiro if, coloca o atual byte em ch, e guarda o proximo em auxch.
+	 * segundo:  O ch eh verificado ate o ultimo bit
+	 * terceiro: Depois que o ultimo bit do ch eh verificado, o contador i volta pro 7, o ch recebe o auxch e auxch guarda o proximo byte...
+	 * Quatro: Tudo se repete ate o final de arquivo ser encontrado, dai o auxch sai do while guardando o ultimo byte.
 	*/
 	
 	i = -1;
