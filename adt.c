@@ -502,7 +502,6 @@ pnode *givemeHtree(FILE *f, int *sizeTree){
         }
         else{
             if(ch == '\\'){
-            	fgetc(f);
                 ch = fgetc(f);
             }
             --*sizeTree;
