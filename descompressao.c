@@ -59,7 +59,7 @@ void descompress(FILE *f,  char *h){
     huff = givemeHtree(f,&sizeTree);
 
 	//INICIA A DESCOMPRESSAO DO ARQUIVO
-    makedescompressOutputfile(fbin, writeoutput, huff, trash, savesizeTree);
+    makedecompressOutputfile(fbin, writeoutput, huff, trash, savesizeTree);
 
 
     if(DEBUG){
