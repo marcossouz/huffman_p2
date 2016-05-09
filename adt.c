@@ -342,6 +342,10 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 	int k= 0, j, i = -1;
 
 	INFO printf("\n\nCombinacao de bits em bytes.....");
+	/*
+	 * No primeiro While, a variavel chOut sai com o resto dos bits...
+	 * 
+	*/
 	while(!feof(input))
 		{
 			ch = fgetc(input);
@@ -355,6 +359,7 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 
 			if(cont > 7)
 			{
+				//SALVANDO O RESTO DE BITS EM CTEMP E DEPOIS EM chOut
 				k=0;
 				for(j = 0; j <= 7; j++)
 				{
@@ -369,6 +374,8 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 					//printf("\nctemp: %s", ctemp);
 				}
 				ctemp[k] = '\0';
+				strcpy(chOut, ctemp);
+				//RESTO DO chOut salvo.
 
 		//INFO printf("\n%s", c);
 
@@ -382,7 +389,7 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 				}
 				fputc(ch, outfile);
 
-				strcpy(chOut, ctemp);
+			//	strcpy(chOut, ctemp);
 			}
 
 		}
@@ -391,25 +398,25 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 	INFO printf(" -> %s", chOut);
 	INFO printf("\n\nEscrevendo ultimo simbolo.....");
 
-			//escrevendo ultimo byte
-			if(cont > 0)
-			{
-				for(i = 0; i <= (cont); i++)
-				{
-					c[i] = chOut[i];
-				}
+	//escrevendo ultimo byte(bits que ficaram salvo em chOut)
+	if(cont > 0)
+	{
+		for(i = 0; i <= (cont); i++)
+		{
+			c[i] = chOut[i];
+		}
 
-				for( ; i <= 7; i++) c[i] = '0'; //escrevendo o lixo
+		for( ; i <= 7; i++) c[i] = '0'; //escrevendo o lixo
 
-				ch = 0;
-				for (i = 0, j = 7; i <= 7; i++, j--) {
+		ch = 0;
+		for (i = 0, j = 7; i <= 7; i++, j--) {
 
-					if(c[i]  == '1') ch = setBit(ch, j);
-				}
-				fputc(ch, outfile);
+			if(c[i]  == '1') ch = setBit(ch, j);
+		}
+		fputc(ch, outfile);
 
 
-			}
+	}
 
 
 		INFO printf("\n\nCOMPRESSAO FINALIZADA COM SUCESSO...\n\n");
