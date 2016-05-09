@@ -521,14 +521,14 @@ pnode *givemeHtree(FILE *f, int *sizeTree){
 }
 
 //INICIA A DESCOMPRESSAO DO ARQUIVO
-void makedescompressOutputfile(FILE *f,FILE *writeoutput,pnode *huff,int trash, int sizeTree){
+void makedecompressOutputfile(FILE *f,FILE *writeoutput,pnode *huff,int trash, int sizeTree){
 
 	int i = 0, ch = 0;
 	pnode *node = NULL;
 	node = huff;
 	rewind(f);
 
-	//setando para o inicio do arquivo comprimido - pulando a compressao
+	//setando para o inicio do arquivo comprimido - "pulando" os 2 bytes iniciais e a arvore.
 	while( i < sizeTree + 2)
 	{
 
