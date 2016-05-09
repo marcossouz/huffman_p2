@@ -237,33 +237,6 @@ char **hasharvore(pnode* first){
 }
 
 //EndHUFFMAN_HASH
-//TEMPFUNCTIONS
-
-//CRIA UM ARQUIVO TEMPORARIO(temp.txt)
-void maketempfile(FILE *f, char **hash){
-
-	setlocale(LC_ALL,"");
-    unsigned char x;
-    int i;
-    FILE *temp;
-
-    temp = fopen("temp.txt","w");
-    rewind(f);
-
-    //HEADERBINARYTEMP
-    for(i = 0; i < 16; i++){
-        fputc('0',temp);
-    }
-    while(1){
-        x = fgetc(f);
-        if(feof(f)){
-            break;
-        }
-        fputs(hash[x],temp);
-    }
-    fclose(temp);
-}
-
 //CALCULA O LIXO
 int getTrash(FILE* input, char **hash){
 
@@ -299,7 +272,7 @@ int getTrash(FILE* input, char **hash){
 void writeOutputfile(int trash, int qt, pnode *huff, char **hash, FILE *input, char *file_name)
 {
 	strcat(file_name, ".huff");
-	FILE *outfile = fopen(file_name, "w");
+    FILE *outfile = fopen(file_name, "w");
 
 	//escreve os 2 primeiros bytes
 	putTwoFirstBytes(outfile, trash, qt);
@@ -318,78 +291,52 @@ void writeOutputfile(int trash, int qt, pnode *huff, char **hash, FILE *input, c
 //Escreve os 2 primeiros bytes no arquivo comprimido
 void putTwoFirstBytes(FILE *out, int trash, int qt){
 
-	INFO printf("\ntrash: %d\n", trash);
-	INFO printf("sizetree: %d\n", qt);
+    unsigned char firstByte;
+    unsigned char secondByte;
+    int auxqt = 0;
+    /*
+     * Inicializa os primeiros Bytes.
+    */
+    firstByte = 0;
+    secondByte = 0;
 
-	//j é o controle dos dois bytes completos
-	int i, j=0, trashBin[3], sizeTreeBin[13];
-	int writeHead[8];
-	unsigned char ch;
+    /*
+     * O primeiro byte recebe o trash deslocado para a esquerda 5 vezes.
+    */
 
+    firstByte = firstByte | (trash << 5);
+    auxqt = qt;
 
-	//primeiro byte
-	ch <<= 8;
-	for(i = 2; i >= 0; i--)
-	{
-		trashBin[i] = trash%2;
-		trash = trash/2;
-	}
+    /*
+     * O primeiro byte recebe o qt deslocado para a direita 8 vezes.
+     * com isso o primeiro byte fica completo.
+     * Foi preenchido os bits 7, 6 e 5 no primeiro deslocamento
+     * e no segundo os bits 4, 3, 2, 1, 0.
+     * Totalizando 8 bits.
+    */
+    auxqt = auxqt >> 8;
+    firstByte = firstByte | (auxqt);
 
-	INFO	printf("\ntrashBin: ");
-	INFO	for(i = 0; i <= 2; i++)
-	INFO		printf("%d", trashBin[i]);
+    /*
+     * O qt tem o seu tamanho reduzido, pois ja foi colocado no primeiro byte uma parte
+     * de seu conteudo.
+    */
 
-	for(i = 12; i >= 0; i--)
-		{
-			sizeTreeBin[i] = qt%2;
-			qt = qt/2;
-		}
+    auxqt = auxqt << 8;
+    qt = qt - auxqt;
 
-	INFO	printf("\nsizeTreeBin: ");
-	INFO	for(i = 0; i <= 12; i++)
-	INFO		printf("%d", sizeTreeBin[i]);
+    /*
+     * O segundo byte recebe o que sobrou do qt.
+    */
 
+    secondByte = secondByte | qt;
 
-	for(i=0; i<=2; i++)
-	{
-		writeHead[i] = trashBin[i];
-	}
+    /*
+     * Agora so resta imprimir no arquivo os dois bytes.
+    */
 
-	for(j = 0, i = 3; i <=7; i++, j++ )
-	{
-		writeHead[i] = sizeTreeBin[j];
-	}
-
-	INFO	printf("\n1_writeHead: ");
-	INFO	for(i = 0; i <= 7; i++)
-	INFO		printf("%d", writeHead[i]);
-
-
-	for (i = 0, j = 7; i <= 7; i++, j--) {
-
-			if(writeHead[i]  == 1) ch = setBit(ch, j);
-		}
-
-	fputc(ch, out);
-
-	//2 byte
-	ch <<= 8;
-	for(i = 5, j = 0; i <=12; i++, j++)
-		{
-			writeHead[j] = sizeTreeBin[i];
-		}
-
-	INFO	printf("\n2_writeHead: ");
-	INFO	for(i = 0; i <= 7; i++)
-	INFO		printf("%d", writeHead[i]);
-
-	for (i = 0, j = 7; i <= 7; i++, j--) {
-
-				if(writeHead[i]  == 1) ch = setBit(ch, j);
-			}
-
-		fputc(ch, out);
-
+    fputc(firstByte,out);
+    fputc(secondByte,out);
 
 }
 
@@ -449,7 +396,7 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 				}
 				ctemp[k] = '\0';
 
-		INFO printf("\n%s", c);
+		//INFO printf("\n%s", c);
 
 				i += 8; //controle de concatenacao
 				cont -= 8;
@@ -503,22 +450,30 @@ void writeFileOut(FILE *input, FILE *outfile, char **hash)
 
 //Retorna o tamanho do lixo
 int givemethetrash(FILE *f){
-    int i, ch = 0, trash = 0;
-    fseek(f,0,SEEK_SET);
+    
+	int i, ch = 0, trash = 0;
+    //fseek(f,0,SEEK_SET);
     ch = fgetc(f);
-    for(i = 5; i <= 7; i++){
+    
+	for(i = 5; i <= 7; i++){
         if(isBitISet(ch,i) > 0){
             trash = setBit(trash, i - 5);
         }
     }
+
+	printf("\n\ntrash(givemethetrash): %d\n", trash);
     return trash;
 }
 
 //OBTEM O TAMANHO DA ARVORE DO ARQUIVO A SER DESCOMPRIMIDO
 int givemethesizeTree(FILE *f){
-    int i, ch = 0, sizeTree = 0;
-    fseek(f,0,SEEK_SET);
+
+	printf("\nDentro na função gimethesizeTree");
+	int i, ch = 0, sizeTree = 0;
+    rewind(f);
+	//fseek(f,0,SEEK_SET);
     ch = fgetc(f);
+
     for(i = 0; i <= 4; i++){
         if(isBitISet(ch,i) > 0){
             sizeTree = setBit(sizeTree, i + 8);
@@ -530,13 +485,17 @@ int givemethesizeTree(FILE *f){
             sizeTree = setBit(sizeTree, i);
         }
     }
+
+    printf("\nsizeTree(funcao givemesizeTheTree): %d\n", sizeTree);
     return sizeTree;
 }
 
 //OBTEM A ARVORE DO ARQUIVO A SER DESCOMPRIMIDO(RECURSIVA)
 pnode *givemeHtree(FILE *f, int *sizeTree){
-    if(*sizeTree > 0){
-        pnode *root;
+
+	if(*sizeTree > 0){
+
+		pnode *root;
         root = createpnode(0,0,NULL,NULL);
         unsigned char ch = 0;
         ch = fgetc(f);
@@ -548,6 +507,7 @@ pnode *givemeHtree(FILE *f, int *sizeTree){
         }
         else{
             if(ch == '\\'){
+            	fgetc(f);
                 ch = fgetc(f);
             }
             --*sizeTree;
@@ -561,72 +521,96 @@ pnode *givemeHtree(FILE *f, int *sizeTree){
 }
 
 //INICIA A DESCOMPRESSAO DO ARQUIVO
-void makedescompressOutputfile(FILE *f,FILE *Writeoutput,pnode *huff,int trash, int sizeTree){
-    int ch;
-    int i;
-    pnode *temproot;
-    long int size;
-    unsigned char *buffer;
-    unsigned char *buffer2;
+void makedescompressOutputfile(FILE *f,FILE *writeoutput,pnode *huff,int trash, int sizeTree){
 
-    //APENAS UM RECEPTOR.
-    buffer2 = (unsigned char*)malloc(1*sizeof(unsigned char));
+	int i = 0, ch = 0;
+	pnode *node = NULL;
+	node = huff;
+	rewind(f);
 
-    //TEMPROOT APONTA PARA A RAIZ DA ARVORE
-    temproot = huff;
-    size = 0;
-    rewind(f);
-    //LE TODO O ARQUIVO PARA DESCOBRIR O TAMANHO
-    while(!feof(f)){
-        fread(buffer2,1,1,f);
-        size++;
-    }
-    buffer = (unsigned char*)malloc(size*sizeof(unsigned char));
+	//setando para o inicio do arquivo comprimido - pulando a compressao
+	while( i < sizeTree + 2)
+	{
 
-    rewind(f);
-    //COLOCANDO TODOS OS ELEMENTOS DO ARQUIVO A SER DESCOMPRIMIDO EM BUFFER.
-    fread(buffer,1,size,f);
-    rewind(f);
-    int ind = 2 + sizeTree;
-    while(1){
-        ch = buffer[ind];
-        //ENQUANTO NAO CHEGA NO PENULTIMO BYTE ENTRA NO IF
-        if(ind < size - 2){
-            for(i = 7; i >= 0; i--){
-                if(isBitISet(ch,i) != 0){
-                    temproot = temproot -> right;
-                }
-                else{
-                    temproot = temproot -> left;
-                }
-                if(isLeaf(temproot)){
-                    fputc(temproot -> c, Writeoutput);
-                    temproot = huff;
-                }
-            }
-        }
-        //ENTRA NO ELSE SE CHEGOU NO ULTIMO BYTE
-        else{
-            for(i = 7; i >= trash; i--){
-                if(isBitISet(ch,i) != 0){
-                    temproot = temproot -> right;
-                }
-                else{
-                    temproot = temproot -> left;
-                }
-                if(!ispEmpty(temproot) && isLeaf(temproot)){
-                    fputc(temproot -> c, Writeoutput);
-                    temproot = huff;
-                }
-            }
-            break;
-        }
-        ind++;
-    }
-    free(buffer);
-    free(buffer2);
-    fclose(f);
-    fclose(Writeoutput);
+		if(ch == '\\')
+		{
+			fgetc(f);
+			ch = fgetc(f);
+			//printf("%c", ch);
+		}
+		else
+		{
+			ch = fgetc(f);
+			//printf("%c", ch);
+
+		}
+
+
+		i++;
+	}
+
+	i = -1;
+	
+	int auxch = fgetc(f);
+	
+	while (!feof(f)) {
+
+		if(i <= -1)
+			{
+				i = 7;
+				ch = auxch;
+				auxch = fgetc(f);
+
+			}
+
+			if(isBitISet(ch, i))
+			{
+				node = node->right;
+
+				if(isLeaf(node))
+				{
+
+					fputc(node->c, writeoutput);
+					node = huff;
+				}
+
+			} else {
+				node = node->left;
+
+				if(isLeaf(node))
+				{
+					fputc(node->c, writeoutput);
+					node = huff;
+				}
+			}
+		i--;
+	}
+
+	// escrevendo o ultimo byte
+	for(i = 7; i >= trash; i-- )
+	{
+		if(isBitISet(auxch, i))
+		{
+			node = node->right;
+
+			if(isLeaf(node))
+			{
+
+				fputc(node->c, writeoutput);
+				node = huff;
+			}
+
+		} else {
+			node = node->left;
+
+			if(isLeaf(node))
+			{
+				fputc(node->c, writeoutput);
+				node = huff;
+			}
+		}
+	}
+
 }
 //EndDESCOMPRESS
 //EndFunctions

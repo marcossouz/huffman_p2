@@ -41,7 +41,6 @@ void compress(FILE *f,  char *h){
 
     huff = startpnode(); // Inicializa a Lista com NULL
 
-
     huff = plista(freq); // Passa a frequencia para a lista
 
     /*

@@ -54,6 +54,7 @@ int main(){
     	//vrifica a extenção do arquivo
        if((h[tam-4]='.')  && (h[tam-3]='h')  && (h[tam-2]=='u') && (h[tam-1]=='f') && (h[tam]=='f')){
 
+    	   printf("\nChamando descompress...");
     	   descompress(f,h);
 
        }else{

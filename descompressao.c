@@ -13,36 +13,53 @@ void descompress(FILE *f,  char *h){
 
     //Tamanho do Lixo
     int trash;
-    //Tamanho da  arvore
+    
+	//Tamanho da  arvore
     int sizeTree, savesizeTree;
-    //Para Obter a arvore do arquivo
+  
+ 	//Para Obter a arvore do arquivo
     pnode *huff;
-    //Um novo arquivo com o nome e a extenção original
-    FILE *Writeoutput;
+    
+	//Um novo arquivo com o nome e a extenção original
+    FILE *writeoutput; //descompactado
     FILE *fbin;
 
     fbin = fopen(h,"rb");
 
     //Remove a extenção .huff
     h[strlen(h) - 5] = '\0';
-    //Cria um novo arquivo com o nome e a extenção original
-    Writeoutput = fopen(h,"w");
-    //Fecha o arquivo
-    fclose(Writeoutput);
-    //Abre o arquivo para se modificado
-    Writeoutput = fopen(h,"r+");
-    // Inicializa a Lista
+    
+	//Cria um novo arquivo com o nome e a extenção original
+    writeoutput = fopen(h,"w");
+    
+	//Fecha o arquivo
+    //fclose(Writeoutput);
+    
+	//Abre o arquivo para se modificado
+   // Writeoutput = fopen(h,"r+");
+    
+	// Inicializa a Lista
     huff = startpnode();
-    //Recebe o tamanho do lixo
-    trash = givemethetrash(f);
-    //Recebe o tamanho da arvore
+    
+    printf("\ngivemethetrash...");
+	//Recebe o tamanho do lixo
+	trash = givemethetrash(f);
+    printf("\nreturn trash....");
+
+    printf("\ngivemethesizeTree...");
+	//Recebe o tamanho da arvore
     sizeTree = givemethesizeTree(f);
-    //Tamanho original da arvore
+    printf("\nreturn sizeTree....\n");
+
+    
+	//Tamanho original da arvore
     savesizeTree = sizeTree;
-    //Obtem a arvore do arquivo
+    
+	//Obtem a arvore do arquivo
     huff = givemeHtree(f,&sizeTree);
-    //INICIA A DESCOMPRESSAO DO ARQUIVO
-    makedescompressOutputfile(fbin, Writeoutput, huff, trash, savesizeTree);
+
+	//INICIA A DESCOMPRESSAO DO ARQUIVO
+    makedescompressOutputfile(fbin, writeoutput, huff, trash, savesizeTree);
 
 
     if(DEBUG){

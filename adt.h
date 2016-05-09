@@ -134,69 +134,55 @@ void hashvalue(pnode *first, int posi, char **h, char *bitschar);
  * @return CHAR** --- RETORNA UMA HASHTRABLE(MATRIZ)
  */
 char **hasharvore(pnode* first);
-
-//TEMPFUNCTIONS
+//EndHASH
 /**
- * DEF: CRIA UM ARQUIVO TEMPORARIO(temp.txt)
+ *  OBTEM O LIXO
  *
- * @param f --- ARQUIVO QUE ESTA SENDO COMPRIMIDO
- * @param hash --- TABELA(MATRIZ) COM TODOS OS CAMINHOS DAS FOLHAS DA ARVORE
- * @return VOID
- */
-void maketempfile(FILE *f, char **hash);
-/**
- * DEF: CALCULA O LIXO E COLOCA NO ARQUIVO TEMPORARIO(temp.txt)
- *
- * @return INT --- RETORNA O LIXO
+ * @param input --- PONTEIRO PARA O ARQUIVO DE ENTRADA
+ * @param hash --- PONTEIRO PARA A HASH
+ * @return int --- RETORNA O LIXO
  */
 int getTrash(FILE *input, char **hash);
 /**
- * DEF: COLOCA O TAMANHO DA ARVORE NO ARQUIVO TEMPORARIO(temp.txt)
+ *  INSERE NO ARQUIVO DE SAIDA OS 2 PRIMEIROS BYTES(LIXO+TAMANHODAARVORE)
  *
- * @param qt --- QUANTIDADE DE ELEMENTOS DA ARVORE
- * @return VOID
- */
-void puttempSize(int qt);
-/**
- * DEF: COMPLETA O ARQUIVO TEMPORARIO COM OS BITS DE LIXO
- *
- * @param QUANTIDADE DE LIXO
- * @return VOID
- */
-void completetempfile(int trash);
-//EndTEMPFUNCTIONS
-//HEADER
-/**
- *
- *
- * @param Writeoutput --- ARQUIVO COMPRIMIDO
+ * @param out --- ARQUIVO DE SAIDA
+ * @param trash --- LIXO
+ * @param qt --- QUANTIDADE DE NOS DA ARVORE
  * @return VOID
  */
 void putTwoFirstBytes(FILE *out, int trash, int qt);
-
-
-
-void writeTree(pnode *huff, FILE *out);
-
-
-void writeFileOut(FILE *input, FILE *outfile, char **hash);
-
-
 /**
- * DEF: IMPRIME OS BITS COMPRIMIDOS CORRESPONDENTES AOS BITS DO ARQUIVO A SER COMPRIMIDO NO ARQUIVO DE SAIDA.
+ *  INSERE NO ARQUIVO DE SAIDA A ARVORE DE HUFFMAN
  *
- * @param Writeoutput --- ARQUIVO COMPRIMIDO
+ * @param huff --- RAIZ DA ARVORE DE HUFFMAN
+ * @param out --- ARQUIVO DE SAIDA
  * @return VOID
  */
-void putcodification(FILE *Writeoutput);
-
-
-
-
+void writeTree(pnode *huff, FILE *out);
+/**
+ * INSERE NO ARQUIVO DE SAIDA TODOS OS BYTES(BIT A BIT) DOS CARACTERES CODIFICADO
+ *
+ * @param input --- ARQUIVO DE ENTRADA
+ * @param outfile --- ARQUIVO DE SAIDA
+ * @param hash --- HASH COM AS CODIFICACOES
+ * @return VOID
+ */
+void writeFileOut(FILE *input, FILE *outfile, char **hash);
+/**
+ * INICIA A CRIACAO DO ARQUIVO COMPRIMIDO
+ *
+ * @param trash --- LIXO
+ * @param qt --- QUANTIDADE DE NOS DA ARVORE
+ * @param huff --- RAIZ DA ARVORE DE HUFFMAN
+ * @param hash --- HASH COM AS CODIFICACOES
+ * @param input --- ARQUIVO DE ENTRADA
+ * @param file_name --- NOME DO ARQUIVO DE ENTRADA
+ * @return VOID
+ */
 void writeOutputfile(int trash, int qt, pnode *huff, char **hash, FILE *input, char *file_name);
 
 
-//EndHEADER
 //DESCOMPRESS
 /**
  * DEF: OBTEM O LIXO DO ARQUIVO A SER DESCOMPRIMIDO
@@ -229,6 +215,6 @@ pnode *givemeHtree(FILE *f, int *sizeTree);
  * @paran trash --- LIXO DO ARQUIVO
  * @return VOID
  */
-void makedescompressOutputfile(FILE *f, FILE *Writeoutput, pnode *huff, int trash, int sizeTree);
+void makedescompressOutputfile(FILE *f, FILE *writeoutput, pnode *huff, int trash, int sizeTree);
 //EndDESCOMPRESS
 //EndFUNCTIONS
