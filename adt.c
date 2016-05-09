@@ -548,11 +548,14 @@ void makedecompressOutputfile(FILE *f,FILE *writeoutput,pnode *huff,int trash, i
 
 		i++;
 	}
-
+	/*
+	 * Esse proximo passo precisa do auxch fora do while para funcionar e funciona assim:
+	 * primeiro: Na primeira execucao ele entra no primeiro if, coloca o atual byte em ch, e guarda o proximo em...
+	 *
+	*/
+	
 	i = -1;
-	
 	int auxch = fgetc(f);
-	
 	while (!feof(f)) {
 
 		if(i <= -1)
