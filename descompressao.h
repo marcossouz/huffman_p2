@@ -5,4 +5,4 @@
  * @param h --- NOME DO ARQUIVO A SER DESCOMPRIMIDO
  * @return VOID
  */
-void descompress(FILE *f,  char *h);
+void decompress(FILE *f,  char *h);
