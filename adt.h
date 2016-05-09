@@ -215,6 +215,6 @@ pnode *givemeHtree(FILE *f, int *sizeTree);
  * @paran trash --- LIXO DO ARQUIVO
  * @return VOID
  */
-void makedescompressOutputfile(FILE *f, FILE *writeoutput, pnode *huff, int trash, int sizeTree);
+void makedecompressOutputfile(FILE *f, FILE *writeoutput, pnode *huff, int trash, int sizeTree);
 //EndDESCOMPRESS
 //EndFUNCTIONS
