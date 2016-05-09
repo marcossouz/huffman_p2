@@ -8,7 +8,7 @@
 
 #define DEBUG 1
 
-void descompress(FILE *f,  char *h){
+void decompress(FILE *f,  char *h){
     setlocale(LC_ALL,"");
 
     //Tamanho do Lixo
